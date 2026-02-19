@@ -11,7 +11,7 @@ class StoreRestaurantRequest extends FormRequest
      */
     public function authorize(): bool
     {
-        return false;
+        return true;
     }
 
     /**
@@ -22,7 +22,13 @@ class StoreRestaurantRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => 'required|string|max:255'
+            'name' => 'required|string|max:255',
+
+            'hours' => 'required|array|min:1',
+
+            'hours.*.day_of_week' => 'required|integer|between:0,6',
+            'hours.*.open_time' => 'required|date_format:H:i',
+            'hours.*.close_time' => 'required|date_format:H:i',
         ];
     }
 }
