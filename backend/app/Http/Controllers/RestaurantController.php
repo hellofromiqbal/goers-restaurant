@@ -8,6 +8,13 @@ use App\Models\Restaurant;
 
 class RestaurantController extends Controller
 {
+    public function index()
+    {
+        $restaurants = Restaurant::with('hours')->get();
+
+        return response()->json($restaurants);
+    }
+    
     public function store(StoreRestaurantRequest $request)
     {
         $validated = $request->validated();
