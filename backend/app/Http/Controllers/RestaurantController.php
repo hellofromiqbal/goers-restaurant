@@ -17,7 +17,7 @@ class RestaurantController extends Controller
             $query->where('name', 'like', '%' . $request->name . '%');
         }
 
-        if ($request->day || $request->time) {
+        if ($request->filled('day') || $request->filled('time')) {
 
             $query->whereHas('hours', function ($q) use ($request) {
 
