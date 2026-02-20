@@ -10,3 +10,14 @@ export type Restaurant = {
   name: string
   hours: Hour[]
 }
+
+export type RestaurantHourPayload = {
+  day_of_week: number
+  open_time: string
+  close_time: string
+}
+
+export type CreateRestaurantPayload = {
+  name: string
+  hours: RestaurantHourPayload[]
+}

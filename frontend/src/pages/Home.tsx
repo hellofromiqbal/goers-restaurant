@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
 import { getRestaurants } from "../api/restaurants";
 import type { Restaurant } from "../types/restaurant";
+import { Link } from "react-router-dom";
+import { days } from "../constants";
 
 export default function Home(){
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday" ,"Saturday", "Sunday"];
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -36,9 +37,17 @@ export default function Home(){
 
   return(
     <div className="p-6 max-w-4xl mx-auto">
-      <h1 className="text-3xl font-bold mb-6">
-        Restaurants
-      </h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold mb-6">
+          Restaurants
+        </h1>
+        <Link
+          to="/add"
+          className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded"
+        >
+          Add Restaurant
+        </Link>
+      </div>
       <div className="grid md:grid-cols-4 gap-2 mb-6">
         <input
           placeholder="Search name"
