@@ -66,4 +66,11 @@ class RestaurantController extends Controller
 
         return response()->json($restaurant);
     }
+
+    public function destroy($id) {
+        $restaurant = Restaurant::findOrFail($id);
+        $restaurant->delete();
+
+        return response()->json(['message' => 'Restaurant deleted successfully.']);
+    }
 }

@@ -24,3 +24,11 @@ export async function createRestaurant(data: CreateRestaurantPayload){
   if (!res.ok) throw new Error("failed");
   return res.json();
 }
+
+export async function deleteRestaurant(id: number) {
+  const res = await fetch(`${API}/restaurants/${id}`,
+    { method:"DELETE" }
+  );
+  if (!res.ok) throw new Error("failed");
+  return res.json();
+}

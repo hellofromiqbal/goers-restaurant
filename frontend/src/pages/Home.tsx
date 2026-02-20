@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getRestaurants } from "../api/restaurants";
+import { deleteRestaurant, getRestaurants } from "../api/restaurants";
 import type { Restaurant } from "../types/restaurant";
 import { Link } from "react-router-dom";
 import { days } from "../constants";
@@ -29,6 +29,22 @@ export default function Home(){
     } finally {
       setLoading(false);
     }
+  }
+
+  async function handleDelete(id: number){
+    setLoading(true);
+    try {
+      const ok = confirm("Delete this restaurant?");
+      if(!ok) return;
+      await deleteRestaurant(id);
+    } catch (error) {
+      console.error(error);
+      return;
+    } finally {
+      loadRestaurants();
+      setLoading(false);
+    }
+    
   }
 
   useEffect(()=>{
@@ -117,6 +133,15 @@ export default function Home(){
                     </p>
                   )
                 })}
+              </div>
+              <div className="flex mt-2 justify-end">
+                <button
+                  className="text-red-600 text-sm cursor-pointer"
+                  onClick={()=>handleDelete(restaurant.id)}
+                  disabled={loading}
+                >
+                  Delete
+                </button>
               </div>
             </div>
           ))}
