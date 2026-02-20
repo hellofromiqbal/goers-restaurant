@@ -3,6 +3,8 @@ import { deleteRestaurant, getRestaurants } from "../api/restaurants";
 import type { Restaurant } from "../types/restaurant";
 import { Link } from "react-router-dom";
 import { days } from "../constants";
+import toast from "react-hot-toast";
+import { FaPlus } from "react-icons/fa6";
 
 export default function Home(){
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -21,11 +23,11 @@ export default function Home(){
       if(name) params.name = name;
       if(day) params.day = day;
       if(time) params.time = time;
-      const data = await getRestaurants(params);
-      setRestaurants(data);
+      const res = await getRestaurants(params);
+      setRestaurants(res.data);
     } catch (error) {
       console.error(error);
-      setError("Failed to load restaurants");
+      setError(error instanceof Error ? error.message : "Failed to load restaurants. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -36,9 +38,11 @@ export default function Home(){
     try {
       const ok = confirm("Delete this restaurant?");
       if(!ok) return;
-      await deleteRestaurant(id);
+      const res = await deleteRestaurant(id);
+      toast.success(res.message);
     } catch (error) {
       console.error(error);
+      toast.error(error instanceof Error ? error.message : "Failed to delete restaurant. Please try again.");
       return;
     } finally {
       loadRestaurants();
@@ -59,8 +63,9 @@ export default function Home(){
         </h1>
         <Link
           to="/add"
-          className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded"
+          className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md"
         >
+          <FaPlus className="inline mr-2" />
           Add Restaurant
         </Link>
       </div>
@@ -89,7 +94,7 @@ export default function Home(){
         />
         <button
           onClick={loadRestaurants}
-          className="bg-teal-600 hover:bg-teal-500 transition text-white rounded p-2 cursor-pointer"
+          className="bg-teal-600 hover:bg-teal-500 transition text-white rounded-md p-2 cursor-pointer"
         >
           Filter
         </button>

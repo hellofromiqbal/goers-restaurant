@@ -1,13 +1,16 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { createRestaurant } from "../api/restaurants";
 import { days } from "../constants";
+import toast from "react-hot-toast";
+import { IoArrowBack } from "react-icons/io5";
 
 export default function AddRestaurant(){
+  const navigate = useNavigate();
   const [name, setName] = useState("");
   const [hours, setHours] = useState(
-    days.map((_,i) => ({
-      day_of_week: i,
+    days.map((_,index) => ({
+      day_of_week: index,
       open_time: "",
       close_time: ""
     }))
@@ -21,35 +24,35 @@ export default function AddRestaurant(){
         name,
         hours: filtered
       };
-      console.log(payload);
-      await createRestaurant(payload);
-      alert("Restaurant created successfully!");
-    } catch (error) {
-      console.error(error);
-      alert("Failed to create restaurant");
-      return;
-    } finally {
-      setIsLoading(false);
+      const res = await createRestaurant(payload);
+      toast.success(res.message);
       setName("");
-      setHours(days.map((_,i) => ({
-        day_of_week: i,
+      setHours(days.map((_,index) => ({
+        day_of_week: index,
         open_time: "",
         close_time: ""
       })));
+      navigate("/");
+    } catch (error) {
+      console.error(error);
+      toast.error(error instanceof Error ? error.message : "Failed to create restaurant. Please try again.");
+      return;
+    } finally {
+      setIsLoading(false);
     }
   }
   return(
     <div className="max-w-xl mx-auto p-6">
       <div className="flex items-center gap-4 mb-6">
-        <Link to="/" className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded">
-          Back
+        <Link to="/" className="flex items-center justify-center bg-teal-600 hover:bg-teal-500 transition rounded-full w-8 h-8 p-2">
+          <IoArrowBack className="text-white"/>
         </Link>
         <h1 className="text-2xl font-bold">
           Add Restaurant
         </h1>
       </div>
       <input
-        className="border p-2 w-full mb-6 rounded"
+        className="p-2 w-full mb-6 rounded-md bg-gray-100 focus:bg-white"
         placeholder="Restaurant name"
         value={name}
         onChange={(e) => setName(e.target.value)}
@@ -62,7 +65,7 @@ export default function AddRestaurant(){
           <div className="flex gap-2 mb-2 items-center">
             <input
               type="time"
-              className="border p-1 rounded"
+              className="p-1 rounded-md bg-gray-100 focus:bg-white"
               value={hour.open_time}
               onChange={(e) => {
                 const copy = [...hours];
@@ -73,7 +76,7 @@ export default function AddRestaurant(){
             />
             <input
               type="time"
-              className="border p-1 rounded"
+              className="p-1 rounded-md bg-gray-100 focus:bg-white"
               value={hour.close_time}
               onChange={(e) => {
                 const copy = [...hours];
@@ -88,7 +91,7 @@ export default function AddRestaurant(){
       <div className="mt-6 flex items-center justify-end">
         <button
           onClick={handleSubmit}
-          className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded cursor-pointer disabled:opacity-50"
+          className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md cursor-pointer disabled:opacity-50"
           disabled={loading}
         >
           Save Restaurant

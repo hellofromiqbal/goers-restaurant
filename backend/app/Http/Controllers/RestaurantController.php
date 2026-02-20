@@ -34,7 +34,10 @@ class RestaurantController extends Controller
 
         }
 
-        return response()->json($query->get());
+        return response()->json([
+            'data' => $query->get(),
+            'message' => 'Restaurants retrieved successfully.'
+        ]);
     }
 
     public function show($id)
@@ -64,7 +67,10 @@ class RestaurantController extends Controller
             return $restaurant->load('hours');
         });
 
-        return response()->json($restaurant);
+        return response()->json([
+            'message' => 'Restaurant created successfully.',
+            'restaurant' => $restaurant
+        ]);
     }
 
     public function destroy($id) {
