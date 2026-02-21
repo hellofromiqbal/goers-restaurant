@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
 import { deleteRestaurant, getRestaurants } from "../api/restaurants";
 import type { Restaurant } from "../types/restaurant";
@@ -5,6 +6,7 @@ import { Link } from "react-router-dom";
 import { days } from "../constants";
 import toast from "react-hot-toast";
 import { FaPlus } from "react-icons/fa6";
+import { LuFilterX } from "react-icons/lu";
 
 export default function Home(){
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
@@ -12,7 +14,9 @@ export default function Home(){
   const [error, setError] = useState<string | null>(null);
 
   const [name, setName] = useState("");
-  const [day, setDay] = useState("");
+  const [debouncedName, setDebouncedName] = useState("");
+  const [day, setDay] = useState<number | null>(null);
+  const [dateInput, setDateInput] = useState("");
   const [time, setTime] = useState("");
 
   async function loadRestaurants(){
@@ -20,8 +24,8 @@ export default function Home(){
     setError(null);
     try {
       const params:Record<string,string> = {};
-      if(name) params.name = name;
-      if(day) params.day = day;
+      if(name) params.name = debouncedName;
+      if(day !== null) params.day = String(day);
       if(time) params.time = time;
       const res = await getRestaurants(params);
       setRestaurants(res.data);
@@ -48,12 +52,25 @@ export default function Home(){
       loadRestaurants();
       setLoading(false);
     }
-    
   }
+
+  async function handleResetFilter() {
+    setName("");
+    setDay(null);
+    setTime("");
+    setDateInput("");
+  }
+
+  useEffect(() => {
+    const debounceTimer = setTimeout(() => {
+      setDebouncedName(name);
+    }, 500);
+    return () => clearTimeout(debounceTimer);
+  }, [name])
 
   useEffect(()=>{
     loadRestaurants();
-  }, [])
+  }, [debouncedName, day, time])
 
   return(
     <div className="p-6 max-w-4xl mx-auto">
@@ -69,23 +86,27 @@ export default function Home(){
           Add Restaurant
         </Link>
       </div>
-      <div className="grid md:grid-cols-4 gap-2 mb-6">
+      <div className="grid md:grid-cols-[1fr_1fr_1fr_auto] gap-2 mb-6">
         <input
           placeholder="Search name"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="p-2 rounded-md bg-gray-100 focus:bg-white"
         />
-        <select
-          value={day}
-          onChange={(e) => setDay(e.target.value)}
+        <input
+          type="date"
           className="p-2 rounded-md bg-gray-100 focus:bg-white"
-          >
-          <option value="">Day</option>
-          {days.map((day, index) => (
-            <option key={index} value={index}>{day}</option>
-          ))}
-        </select>
+          value={dateInput}
+          onChange={(e) => {
+            const value = e.target.value;
+            setDateInput(value);
+            if (!value) {
+              setDay(null);
+              return;
+            }
+            setDay(new Date(value).getDay());
+          }}
+        />
         <input
           type="time"
           value={time}
@@ -93,10 +114,10 @@ export default function Home(){
           className="p-2 rounded-md bg-gray-100 focus:bg-white"
         />
         <button
-          onClick={loadRestaurants}
-          className="bg-teal-600 hover:bg-teal-500 transition text-white rounded-md p-2 cursor-pointer"
+          onClick={handleResetFilter}
+          className="bg-teal-600 hover:bg-teal-500 transition text-white rounded-md p-2 cursor-pointer w-full md:w-10 h-full md:h-10 flex justify-center items-center"
         >
-          Filter
+          <LuFilterX className="w-5 h-5"/>
         </button>
       </div>
 
