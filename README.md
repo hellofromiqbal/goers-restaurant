@@ -154,7 +154,7 @@ http://localhost:5173
 
 * Laravel
 * Laravel Sanctum
-* MySQL
+* MySQL (using SQLite)
 
 ---
 
