@@ -158,6 +158,41 @@ http://localhost:5173
 
 ---
 
+# 🧩 ERD (Entity Relationship Diagram)
+
+USERS
+-----
+id (PK)
+name
+email
+password
+created_at
+updated_at
+
+
+RESTAURANTS
+-----------
+id (PK)
+name
+created_at
+updated_at
+
+
+RESTAURANT_HOURS
+----------------
+id (PK)
+restaurant_id (FK → restaurants.id)
+day_of_week
+open_time
+close_time
+
+
+RELATIONSHIPS
+-------------
+restaurants 1 ────< restaurant_hours
+
+---
+
 # 📝 Notes (Assumptions and Limitations)
 
 * Authentication is intentionally simplified (hardcoded admin)
@@ -168,5 +203,3 @@ http://localhost:5173
 
 # 👨‍💻 Author
 Muhammad Iqbal
-
-Technical test submission.
