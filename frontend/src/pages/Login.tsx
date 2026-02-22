@@ -64,13 +64,20 @@ export default function Login() {
           {errors.password && <span className="text-small text-red-500">{errors.password.message}</span>}
         </div>
         <div className="mt-6 flex items-center justify-end">
-        <button
-          className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md cursor-pointer disabled:opacity-50"
-        >
-          Login
-        </button>
-      </div>
+          <button
+            className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md cursor-pointer disabled:opacity-50"
+          >
+            Login
+          </button>
+        </div>
       </form>
+      <div className="flex flex-col gap-1 mt-6 text-gray-500">
+        <p className="text-small">Since the admin account is hardcoded in the backend (for testing purpose), Please use this admin account provided below:</p>
+        <ul className="flex flex-col ps-6">
+          <li className="list-disc">email: admin@goers.com</li>
+          <li className="list-disc">password: helloworld</li>
+        </ul>
+      </div>
     </div>
   );
 }

@@ -185,6 +185,8 @@ RESTAURANT_HOURS
 * day_of_week
 * open_time
 * close_time
+* created_at
+* updated_at
 
 
 RELATIONSHIPS
