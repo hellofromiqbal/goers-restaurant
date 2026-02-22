@@ -1,18 +1,18 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from "react";
-import { deleteRestaurant, getRestaurants } from "../api/restaurants";
+import { getRestaurants } from "../api/restaurants";
 import type { Restaurant } from "../types/restaurant";
 import { Link } from "react-router-dom";
-import { days } from "../constants";
 import toast from "react-hot-toast";
-import { isLoggedIn, logout as deleteLocalstorageToken } from "../utils/auth";
 import { FaPlus } from "react-icons/fa6";
 import { LuFilterX } from "react-icons/lu";
 import { MdLogin, MdLogout } from "react-icons/md";
-import { logout } from "../api/auth";
+import { logout as logoutApi } from "../api/auth";
+import { useAuth } from "../context/AuthContext";
+import RestaurantCard from "../components/RestaurantCard";
 
 export default function Home(){
-  const isAdmin = isLoggedIn();
+  const { isAdmin, logout } = useAuth();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -41,22 +41,6 @@ export default function Home(){
     }
   }
 
-  async function handleDelete(id: number){
-    setLoading(true);
-    try {
-      const ok = confirm("Delete this restaurant?");
-      if(!ok) return;
-      const res = await deleteRestaurant(id);
-      toast.success(res.message);
-    } catch (error) {
-      console.error(error);
-      toast.error(error instanceof Error ? error.message : "Failed to delete restaurant. Please try again.");
-    } finally {
-      loadRestaurants();
-      setLoading(false);
-    }
-  }
-
   async function handleResetFilter() {
     setName("");
     setDay(null);
@@ -67,8 +51,8 @@ export default function Home(){
   async function handleLogout() {
     setLoading(true);
     try {
-      const res = await logout();
-      deleteLocalstorageToken();
+      const res = await logoutApi();
+      logout();
       toast.success(res.message);
     } catch (error) {
       console.error(error);
@@ -183,31 +167,13 @@ export default function Home(){
       {!loading && !error && restaurants.length > 0 && (
         <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {restaurants.map((restaurant) => (
-            <div key={restaurant.id} className="border border-gray-50 rounded-xl p-4 shadow-sm hover:shadow-md transition">
-              <h2 className="font-bold text-xl text-gray-700">{restaurant.name}</h2>
-              <div className="mt-2 text-sm text-gray-600">
-                {days.map((_, index) => {
-                  const hour = restaurant.hours.find((hour) => hour.day_of_week  === index);
-                  return (
-                    <p key={index} className="text-teal-600 flex justify-between">
-                      <span>{days[index]}</span>
-                      <span>{hour ? `${hour.open_time} - ${hour.close_time}` : "closed"}</span>
-                    </p>
-                  )
-                })}
-              </div>
-              {isAdmin && (
-                <div className="flex mt-2 justify-end">
-                  <button
-                    className="text-red-600 text-sm cursor-pointer"
-                    onClick={()=>handleDelete(restaurant.id)}
-                    disabled={loading}
-                  >
-                    Delete
-                  </button>
-                </div>
-              )}
-            </div>
+            <RestaurantCard
+              key={restaurant.id}
+              restaurant={restaurant}
+              loadRestaurants={loadRestaurants}
+              loading={loading}
+              setLoading={setLoading}
+            />
           ))}
         </div>
       )}

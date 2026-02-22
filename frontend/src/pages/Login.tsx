@@ -1,8 +1,9 @@
-import { login } from "../api/auth";
+import { login as loginApi } from "../api/auth";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import { IoArrowBack } from "react-icons/io5";
 import { useForm, type SubmitHandler } from "react-hook-form";
+import { useAuth } from "../context/AuthContext";
 
 interface LoginFormInputs {
   email: string;
@@ -11,6 +12,7 @@ interface LoginFormInputs {
 
 export default function Login() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const {
     register,
     handleSubmit,
@@ -19,8 +21,8 @@ export default function Login() {
 
   const handleLogin: SubmitHandler<LoginFormInputs> = async ({ email, password }) => {
     try {
-      const res = await login(email, password);
-      localStorage.setItem("token", res.token);
+      const res = await loginApi(email, password);
+      login(res.token);
       toast.success(res.message);
       navigate("/");
     } catch (error) {
