@@ -1,34 +1,20 @@
+import client from "./client";
 import type { CreateRestaurantPayload } from "../types/restaurant";
-
-const API = "http://127.0.0.1:8000/api";  // I put it here for testing purposes only. This should be in an env variable on real production projects.
 
 export async function getRestaurants(params?: Record<string, string>) {
   const query = params
     ? "?" + new URLSearchParams(params).toString()
     : "";
-  const res = await fetch(`${API}/restaurants${query}`);
-  if (!res.ok) throw new Error("failed");
-  return res.json();
+  const res = await client.get(`/restaurants${query}`, { params });
+  return res.data;
 }
 
 export async function createRestaurant(data: CreateRestaurantPayload){
-  const res = await fetch(`${API}/restaurants`,
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify(data)
-    }
-  );
-  if (!res.ok) throw new Error("failed");
-  return res.json();
+  const res = await client.post("/restaurants", data);
+  return res.data;
 }
 
 export async function deleteRestaurant(id: number) {
-  const res = await fetch(`${API}/restaurants/${id}`,
-    { method:"DELETE" }
-  );
-  if (!res.ok) throw new Error("failed");
-  return res.json();
+  const res = await client.delete(`/restaurants/${id}`);
+  return res.data;
 }
