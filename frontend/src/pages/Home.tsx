@@ -5,11 +5,11 @@ import type { Restaurant } from "../types/restaurant";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { FaPlus } from "react-icons/fa6";
-import { LuFilterX } from "react-icons/lu";
 import { MdLogin, MdLogout } from "react-icons/md";
 import { logout as logoutApi } from "../api/auth";
 import { useAuth } from "../context/AuthContext";
 import RestaurantCard from "../components/RestaurantCard";
+import FilterComponent from "../components/FilterComponent";
 
 export default function Home(){
   const { isAdmin, logout } = useAuth();
@@ -74,71 +74,49 @@ export default function Home(){
   }, [debouncedName, day, time])
 
   return(
-    <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold">
-          Restaurants
-        </h1>
-        {isAdmin ? (
-          <div className="flex gap-2">
-            <Link
-              to="/add"
-              className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md"
-            >
-              <FaPlus className="inline mr-2" />
-              Add Restaurant
-            </Link>
-            <button
-              onClick={handleLogout}
-              className="bg-teal-600 hover:bg-teal-500 transition text-white rounded-md p-2 cursor-pointer w-full md:w-max h-full md:h-max flex justify-center items-center gap-2"
-            >
-              <MdLogout className="w-5 h-5"/>
-              <span className="hidden md:inline">Logout</span>
-            </button>
-          </div>
-        ) : (
+    <div className="px-6 max-w-4xl mx-auto">
+      <div className="sticky top-0 z-10 bg-white py-6">
+        <div className="flex items-center justify-between mb-6">
+          <h1 className="text-3xl font-bold">
+        Restaurants
+          </h1>
+          {isAdmin ? (
+        <div className="flex gap-2">
           <Link
-            to="/login"
-            className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md flex justify-center items-center gap-2"
-
+            to="/add"
+            className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md"
           >
-            <MdLogin className="w-5 h-5"/>
-            <span className="inline">Login</span>
+            <FaPlus className="inline mr-2" />
+            Add Restaurant
           </Link>
-        )}
-      </div>
-      <div className="grid md:grid-cols-[1fr_1fr_1fr_auto] gap-2 mb-6">
-        <input
-          placeholder="Search name"
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="p-2 rounded-md bg-gray-100 focus:bg-white"
-        />
-        <input
-          type="date"
-          className="p-2 rounded-md bg-gray-100 focus:bg-white"
-          value={dateInput}
-          onChange={(e) => {
-            const value = e.target.value;
-            setDateInput(value);
-            if (!value) {
-              setDay(null);
-            }
-            setDay(new Date(value).getDay());
-          }}
-        />
-        <input
-          type="time"
-          value={time}
-          onChange={(e) => setTime(e.target.value)}
-          className="p-2 rounded-md bg-gray-100 focus:bg-white"
-        />
-        <button
-          onClick={handleResetFilter}
-          className="bg-teal-600 hover:bg-teal-500 transition text-white rounded-md p-2 cursor-pointer w-full md:w-10 h-full md:h-10 flex justify-center items-center"
+          <button
+            onClick={handleLogout}
+            className="bg-teal-600 hover:bg-teal-500 transition text-white rounded-md p-2 cursor-pointer w-full md:w-max h-full md:h-max flex justify-center items-center gap-2"
+          >
+            <MdLogout className="w-5 h-5"/>
+            <span className="hidden md:inline">Logout</span>
+          </button>
+        </div>
+          ) : (
+        <Link
+          to="/login"
+          className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md flex justify-center items-center gap-2"
         >
-          <LuFilterX className="w-5 h-5"/>
-        </button>
+          <MdLogin className="w-5 h-5"/>
+          <span className="inline">Login</span>
+        </Link>
+          )}
+        </div>
+        <FilterComponent
+          name={name}
+          setName={setName}
+          dateInput={dateInput}
+          setDateInput={setDateInput}
+          setDay={setDay}
+          time={time}
+          setTime={setTime}
+          handleResetFilter={handleResetFilter}
+        />
       </div>
 
       {loading && (
