@@ -9,6 +9,7 @@ import { FaPlus } from "react-icons/fa6";
 import { LuFilterX } from "react-icons/lu";
 
 export default function Home(){
+  const isAdmin = !!localStorage.getItem("token");
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -74,17 +75,19 @@ export default function Home(){
 
   return(
     <div className="p-6 max-w-4xl mx-auto">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold mb-6">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold">
           Restaurants
         </h1>
-        <Link
-          to="/add"
-          className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md"
-        >
-          <FaPlus className="inline mr-2" />
-          Add Restaurant
-        </Link>
+        {isAdmin && (
+          <Link
+            to="/add"
+            className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md"
+          >
+            <FaPlus className="inline mr-2" />
+            Add Restaurant
+          </Link>
+        )}
       </div>
       <div className="grid md:grid-cols-[1fr_1fr_1fr_auto] gap-2 mb-6">
         <input
@@ -160,15 +163,17 @@ export default function Home(){
                   )
                 })}
               </div>
-              <div className="flex mt-2 justify-end">
-                <button
-                  className="text-red-600 text-sm cursor-pointer"
-                  onClick={()=>handleDelete(restaurant.id)}
-                  disabled={loading}
-                >
-                  Delete
-                </button>
-              </div>
+              {isAdmin && (
+                <div className="flex mt-2 justify-end">
+                  <button
+                    className="text-red-600 text-sm cursor-pointer"
+                    onClick={()=>handleDelete(restaurant.id)}
+                    disabled={loading}
+                  >
+                    Delete
+                  </button>
+                </div>
+              )}
             </div>
           ))}
         </div>
