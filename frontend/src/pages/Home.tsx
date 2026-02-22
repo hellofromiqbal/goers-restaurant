@@ -5,11 +5,14 @@ import type { Restaurant } from "../types/restaurant";
 import { Link } from "react-router-dom";
 import { days } from "../constants";
 import toast from "react-hot-toast";
+import { isLoggedIn, logout as deleteLocalstorageToken } from "../utils/auth";
 import { FaPlus } from "react-icons/fa6";
 import { LuFilterX } from "react-icons/lu";
+import { MdLogin, MdLogout } from "react-icons/md";
+import { logout } from "../api/auth";
 
 export default function Home(){
-  const isAdmin = !!localStorage.getItem("token");
+  const isAdmin = isLoggedIn();
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -48,7 +51,6 @@ export default function Home(){
     } catch (error) {
       console.error(error);
       toast.error(error instanceof Error ? error.message : "Failed to delete restaurant. Please try again.");
-      return;
     } finally {
       loadRestaurants();
       setLoading(false);
@@ -60,6 +62,20 @@ export default function Home(){
     setDay(null);
     setTime("");
     setDateInput("");
+  }
+
+  async function handleLogout() {
+    setLoading(true);
+    try {
+      const res = await logout();
+      deleteLocalstorageToken();
+      toast.success(res.message);
+    } catch (error) {
+      console.error(error);
+      toast.error(error instanceof Error ? error.message : "Failed to delete restaurant. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -79,13 +95,31 @@ export default function Home(){
         <h1 className="text-3xl font-bold">
           Restaurants
         </h1>
-        {isAdmin && (
+        {isAdmin ? (
+          <div className="flex gap-2">
+            <Link
+              to="/add"
+              className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md"
+            >
+              <FaPlus className="inline mr-2" />
+              Add Restaurant
+            </Link>
+            <button
+              onClick={handleLogout}
+              className="bg-teal-600 hover:bg-teal-500 transition text-white rounded-md p-2 cursor-pointer w-full md:w-max h-full md:h-max flex justify-center items-center gap-2"
+            >
+              <MdLogout className="w-5 h-5"/>
+              <span className="hidden md:inline">Logout</span>
+            </button>
+          </div>
+        ) : (
           <Link
-            to="/add"
-            className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md"
+            to="/login"
+            className="bg-teal-600 hover:bg-teal-500 transition text-white px-4 py-2 rounded-md flex justify-center items-center gap-2"
+
           >
-            <FaPlus className="inline mr-2" />
-            Add Restaurant
+            <MdLogin className="w-5 h-5"/>
+            <span className="inline">Login</span>
           </Link>
         )}
       </div>
@@ -105,7 +139,6 @@ export default function Home(){
             setDateInput(value);
             if (!value) {
               setDay(null);
-              return;
             }
             setDay(new Date(value).getDay());
           }}

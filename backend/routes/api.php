@@ -10,4 +10,5 @@ Route::get('/restaurants/{id}', [RestaurantController::class, 'show']);
 Route::middleware('auth:sanctum')->group(function() {
   Route::post('/restaurants', [RestaurantController::class, 'store']);
   Route::delete('/restaurants/{id}', [RestaurantController::class, 'destroy']);
+  Route::post('/logout', [AuthController::class, 'logout']);
 });
