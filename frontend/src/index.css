@@ -1,0 +1,21 @@
+@import url('https://fonts.googleapis.com/css2?family=Karla:wght@300;400;500;600;700&display=swap');
+@import "tailwindcss";
+
+body{
+  font-family: Karla, "Helvetica Neue", Helvetica, Roboto, "Segoe UI", sans-serif;
+}
+
+@keyframes marqueeMove {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+.marquee-track {
+  display: flex;
+  width: max-content;
+  white-space: nowrap;
+  animation: marqueeMove 12s linear infinite;
+  font-weight: bold;
+  font-size: 1.25rem;
+  color: #374151;
+}
