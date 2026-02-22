@@ -56,6 +56,7 @@ export default function AddRestaurant(){
         placeholder="Restaurant name"
         value={name}
         onChange={(e) => setName(e.target.value)}
+        autoFocus
       />
       {hours.map((hour, index) => (
         <div key={index} className="flex items-center justify-between">
