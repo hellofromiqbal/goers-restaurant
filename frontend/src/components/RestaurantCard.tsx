@@ -3,6 +3,7 @@ import { useAuth } from "../context/AuthContext";
 import type { Restaurant } from "../types/restaurant";
 import { deleteRestaurant } from "../api/restaurants";
 import toast from "react-hot-toast";
+import { useEffect, useRef, useState } from "react";
 
 export default function RestaurantCard({
   restaurant,
@@ -16,6 +17,8 @@ export default function RestaurantCard({
   setLoading: (value: boolean) => void
 }) {
   const { isAdmin } = useAuth();
+  const nameRef = useRef<HTMLDivElement>(null);
+  const [overflow, setOverflow] = useState(false);
   async function handleDelete(id: number){
     setLoading(true);
     try {
@@ -31,9 +34,32 @@ export default function RestaurantCard({
       setLoading(false);
     }
   }
+  useEffect(() => {
+    const el = nameRef.current;
+    if (!el) return;
+    const parent = el.parentElement;
+    if (!parent) return;
+    setOverflow(el.scrollWidth > parent.clientWidth);
+  }, [restaurant.name]);
   return (
     <div key={restaurant.id} className="border border-gray-50 rounded-xl p-4 shadow-sm hover:shadow-md transition">
-      <h2 className="font-bold text-xl text-gray-700">{restaurant.name}</h2>
+      <div className="overflow-hidden w-full">
+        {overflow ? (
+          <div className="overflow-hidden w-full">
+            <div className="marquee-track">
+              <span ref={nameRef}>{restaurant.name}</span>
+              <span className="ml-8">{restaurant.name}</span>
+            </div>
+          </div>
+        ) : (
+          <div
+            ref={nameRef}
+            className="font-bold text-xl text-gray-700 truncate"
+          >
+            {restaurant.name}
+          </div>
+        )}
+      </div>
       <div className="mt-2 text-sm text-gray-600">
         {days.map((_, index) => {
           const hour = restaurant.hours.find((hour) => hour.day_of_week  === index);
